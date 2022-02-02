@@ -1045,12 +1045,22 @@ class LtiConsumerXBlock(StudioEditableXBlockMixin, XBlock):
         user_role = self.runtime.get_user_role()
         lti_consumer = self._get_lti_consumer()
 
+        real_user_data = self.extract_real_user_data()
+        user_username = None
+        user_email = None
+        if self.ask_to_send_username and real_user_data['user_username']:
+            user_username = real_user_data['user_username']
+        if self.ask_to_send_email and real_user_data['user_email']:
+            user_email = real_user_data['user_email']
+
         try:
             # Pass user data
             lti_consumer.set_user_data(
                 user_id=self.external_user_id,
                 # Pass django user role to library
-                role=user_role
+                role=user_role,
+                full_name=user_username,
+                email_address=user_email
             )
 
             # Set launch context
